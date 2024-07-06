@@ -1,8 +1,16 @@
-# app.py
-
+import os
+import json
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+
+def load_config():
+    config_path = os.getenv('CONFIG_PATH', 'config.json')  # Default to 'config.json' if the environment variable is not set
+    with open(config_path, 'r') as config_file:
+        config = json.load(config_file)
+    return config
+
+app.config.update(load_config())
 
 # Example word lists based on stylistic or thematic differences
 male_words = ["sports", "car", "technology", "work", "money", "football", "tools"]
@@ -30,5 +38,9 @@ def predict():
 
     return jsonify({'prediction': prediction, 'trained': True})
 
+@app.route('/result')
+def result():
+    return render_template('result.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
